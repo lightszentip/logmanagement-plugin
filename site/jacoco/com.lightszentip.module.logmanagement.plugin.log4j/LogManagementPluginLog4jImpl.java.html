@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LogManagementPluginLog4jImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">logmanagement-plugin</a> &gt; <a href="index.source.html" class="el_package">com.lightszentip.module.logmanagement.plugin.log4j</a> &gt; <span class="el_source">LogManagementPluginLog4jImpl.java</span></div><h1>LogManagementPluginLog4jImpl.java</h1><pre class="source lang-java linenums">package com.lightszentip.module.logmanagement.plugin.log4j;
+
+/*
+ * --start-license-header--
+ * Project: logmanagement-plugin
+ * ---------
+ * Copyright (C) 2014 Tobias Gafner
+ * ---------
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * --end-license-header--
+ */
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import com.lightszentip.module.logmanagement.plugin.LogManagementPlugin;
+import com.lightszentip.module.logmanagement.plugin.util.LogLevel;
+
+/**
+ * The plugin implementation for log4j logger.
+ *
+ */
+public class LogManagementPluginLog4jImpl implements LogManagementPlugin {
+
+<span class="fc" id="L40">	public LogManagementPluginLog4jImpl() {</span>
+<span class="fc" id="L41">	}</span>
+
+	@Override
+	public void changeRootLogLevel(final LogLevel logLevel) {
+<span class="fc" id="L45">		final Logger root = org.apache.log4j.Logger.getRootLogger();</span>
+<span class="fc" id="L46">		root.setLevel(this.mapLogLevel(logLevel));</span>
+<span class="fc" id="L47">	}</span>
+
+	@Override
+	public void setLogLevelForLogger(final String logger,
+			final LogLevel logLevel) {
+<span class="fc" id="L52">		org.apache.log4j.LogManager.getLogger(logger).setLevel(</span>
+				this.mapLogLevel(logLevel));
+<span class="fc" id="L54">	}</span>
+
+	@Override
+	public Map&lt;String, String&gt; getLoggerWithLogLevel() {
+<span class="fc" id="L58">		return this.getLogger(false);</span>
+	}
+
+	private Map&lt;String, String&gt; getLogger(final boolean addNullLogLevelLogger) {
+<span class="fc" id="L62">		final Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L63">		final Enumeration&lt;?&gt; loggers = org.apache.log4j.LogManager</span>
+				.getCurrentLoggers();
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		while (loggers.hasMoreElements()) {</span>
+<span class="fc" id="L66">			final Category tmpLogger = (Category) loggers.nextElement();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (tmpLogger.getLevel() != null) {</span>
+<span class="fc" id="L68">				map.put(tmpLogger.getName(), tmpLogger.getLevel().toString());</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			} else if (addNullLogLevelLogger) {</span>
+<span class="fc" id="L70">				map.put(tmpLogger.getName(), null);</span>
+			}
+
+<span class="fc" id="L73">		}</span>
+<span class="fc" id="L74">		return map;</span>
+	}
+
+	/**
+	 * Map the loglevel from plugin to log4j log level.
+	 * 
+	 * @param logLevel
+	 *            The plugin loglevel.
+	 * @return The log4j log level.
+	 */
+	private Level mapLogLevel(final LogLevel logLevel) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (LogLevel.DEBUG.equals(logLevel)) {</span>
+<span class="fc" id="L86">			return Level.DEBUG;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		} else if (LogLevel.TRACE.equals(logLevel)) {</span>
+<span class="fc" id="L88">			return Level.TRACE;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		} else if (LogLevel.INFO.equals(logLevel)) {</span>
+<span class="fc" id="L90">			return Level.INFO;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		} else if (LogLevel.WARN.equals(logLevel)) {</span>
+<span class="fc" id="L92">			return Level.WARN;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		} else if (LogLevel.ERROR.equals(logLevel)) {</span>
+<span class="fc" id="L94">			return Level.ERROR;</span>
+		}
+<span class="nc" id="L96">		return null;</span>
+	}
+
+	@Override
+	public Map&lt;String, String&gt; getAllLogger() {
+<span class="fc" id="L101">		return this.getLogger(true);</span>
+	}
+
+	@Override
+	public String getRootLogLevel() {
+<span class="fc" id="L106">		final Logger root = org.apache.log4j.Logger.getRootLogger();</span>
+<span class="pc bpc" id="L107" title="2 of 4 branches missed.">		if (root != null &amp;&amp; root.getLevel() != null) {</span>
+<span class="fc" id="L108">			return root.getLevel().toString();</span>
+		}
+<span class="nc" id="L110">		return null;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>

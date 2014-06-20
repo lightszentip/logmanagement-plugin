@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LogManagementPluginLogbackImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">logmanagement-plugin</a> &gt; <a href="index.source.html" class="el_package">com.lightszentip.module.logmanagement.plugin.logback</a> &gt; <span class="el_source">LogManagementPluginLogbackImpl.java</span></div><h1>LogManagementPluginLogbackImpl.java</h1><pre class="source lang-java linenums">package com.lightszentip.module.logmanagement.plugin.logback;
+
+/*
+ * --start-license-header--
+ * Project: logmanagement-plugin
+ * ---------
+ * Copyright (C) 2014 Tobias Gafner
+ * ---------
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * --end-license-header--
+ */
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+
+import com.lightszentip.module.logmanagement.plugin.LogManagementPlugin;
+import com.lightszentip.module.logmanagement.plugin.util.LogLevel;
+
+/**
+ * The plugin implementation for logback.
+ *
+ */
+public class LogManagementPluginLogbackImpl implements LogManagementPlugin {
+
+<span class="fc" id="L41">	public LogManagementPluginLogbackImpl() {</span>
+<span class="fc" id="L42">	}</span>
+
+	@Override
+	public void changeRootLogLevel(final LogLevel logLevel) {
+<span class="fc" id="L46">		final LoggerContext lc = (LoggerContext) LoggerFactory</span>
+				.getILoggerFactory();
+<span class="fc" id="L48">		lc.getLogger(Logger.ROOT_LOGGER_NAME).setLevel(this.mapLogLevel(logLevel));</span>
+<span class="fc" id="L49">	}</span>
+
+	@Override
+	public void setLogLevelForLogger(final String logger,
+			final LogLevel logLevel) {
+<span class="fc" id="L54">		final LoggerContext lc = (LoggerContext) LoggerFactory</span>
+				.getILoggerFactory();
+<span class="fc" id="L56">		lc.getLogger(logger).setLevel(this.mapLogLevel(logLevel));</span>
+<span class="fc" id="L57">	}</span>
+
+	@Override
+	public Map&lt;String, String&gt; getLoggerWithLogLevel() {
+<span class="fc" id="L61">		return this.getLogger(false);</span>
+	}
+
+	/**
+	 * Map the plugin log level to logback log level.
+	 * 
+	 * @param logLevel
+	 *            The plugin log level.
+	 * @return The logback log level.
+	 */
+	private Level mapLogLevel(final LogLevel logLevel) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (LogLevel.DEBUG.equals(logLevel)) {</span>
+<span class="fc" id="L73">			return Level.DEBUG;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		} else if (LogLevel.TRACE.equals(logLevel)) {</span>
+<span class="fc" id="L75">			return Level.TRACE;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		} else if (LogLevel.INFO.equals(logLevel)) {</span>
+<span class="fc" id="L77">			return Level.INFO;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		} else if (LogLevel.WARN.equals(logLevel)) {</span>
+<span class="fc" id="L79">			return Level.WARN;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (LogLevel.ERROR.equals(logLevel)) {</span>
+<span class="fc" id="L81">			return Level.ERROR;</span>
+		}
+<span class="nc" id="L83">		return null;</span>
+	}
+
+	@Override
+	public Map&lt;String, String&gt; getAllLogger() {
+<span class="fc" id="L88">		return this.getLogger(true);</span>
+	}
+
+	private Map&lt;String, String&gt; getLogger(final boolean addNullLogLevelLogger) {
+<span class="fc" id="L92">		final Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L93">		final LoggerContext lc = (LoggerContext) LoggerFactory</span>
+				.getILoggerFactory();
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (final Logger log : lc.getLoggerList()) {</span>
+<span class="fc" id="L97">			final Level logLevel = log.getLevel();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (logLevel != null) {</span>
+<span class="fc" id="L99">				map.put(log.getName(), logLevel.toString());</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			} else if (addNullLogLevelLogger) {</span>
+<span class="fc" id="L101">				map.put(log.getName(), null);</span>
+			}
+<span class="fc" id="L103">		}</span>
+<span class="fc" id="L104">		return map;</span>
+	}
+
+	@Override
+	public String getRootLogLevel() {
+<span class="fc" id="L109">		final LoggerContext lc = (LoggerContext) LoggerFactory</span>
+				.getILoggerFactory();
+<span class="fc" id="L111">		final Logger logger = lc.getLogger(Logger.ROOT_LOGGER_NAME);</span>
+<span class="pc bpc" id="L112" title="2 of 4 branches missed.">		if (logger != null &amp;&amp; logger.getLevel() != null) {</span>
+<span class="fc" id="L113">			return logger.getLevel().toString();</span>
+		}
+<span class="nc" id="L115">		return null;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.1.201405082137</span></div></body></html>
