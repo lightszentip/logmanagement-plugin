@@ -1,0 +1,1 @@
+{"name":"Logmanagement-plugin","tagline":"Change the log level at runtime","body":"# README #\r\n\r\nThe plugin can change the log level for slf4j logging on the fly.\r\n\r\nExample: https://github.com/lightszentip/logmanagement-plugin-example-app","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
