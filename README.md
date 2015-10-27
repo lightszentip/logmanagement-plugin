@@ -15,3 +15,13 @@ LogManagementPluginFactory.getLogManagementPlugin().changeRootLogLevel(logLevel)
 ```
 
 Example: https://github.com/lightszentip/logmanagement-plugin-example-app
+
+To get the artifact from Repository
+
+```
+<dependency>
+  <groupId>com.lightszentip.module</groupId>
+  <artifactId>logmanagement-plugin</artifactId>
+  <version>0.9.1</version>
+</dependency>
+```
